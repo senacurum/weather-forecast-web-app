@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Hava Durumu</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+    <style>
+        tr:nth-child(even) {background-color: #f2f2f2;}
+        h1 {
+            color: #adad85;
+        }
+        i {
+            margin-right: auto;
+        }
+    </style>
+
+</head>
+<body>
+<center><b><h1 >Ankara 15 Günlük Hava Durumu </h1></b></center>
+<table id="wTable" class="table table-bordered table-dark">
+
+    <thead>
+    <tr style="font-style:italic" >
+        <th scope="col">Ülke</th>
+        <th scope="col">Şehir</th>
+        <th scope="col">Sıcaklık(K)</th>
+        <th scope="col">Açıklama</th>
+        <th scope="col">Nem</th>
+        <th scope="col">Rüzgar Hızı(B)</th>
+        <th scope="col">Tarih</th>
+
+
+
+    </tr>
+    </thead>
+    <tbody style="font-style: oblique">
+        <tr th:each="log: ${weathers}">
+            <td th:text="${log.getCountry()}"></td>
+            <td th:text="${log.getName()}"></td>
+            <td th:text="${log.getTemp()}"></td>
+            <td th:text="${log.getMain()}"></td>
+            <td th:text="${log.getHumidity()}"></td>
+            <td th:text="${log.getWind_speed()}"></td>
+            <td th:text="${log.getDate().toString().substring(0,10)}"></td>
+
+        </tr>
+
+    </tbody>
+</table>
+<div><canvas id="myChart" style=" width: 100%;max-width: 100%" ></canvas> </div>
+</body>
+<script>
+    var myTableArray = [];
+    $("table#wTable tr").each(function() {
+        var arrayOfThisRow = [];
+        var tableData = $(this).find('td');
+        if (tableData.length > 0) {
+            tableData.each(function() { arrayOfThisRow.push($(this).text()); });
+            myTableArray.push(arrayOfThisRow);
+        }
+    });
+
+    var xValues = [];
+    for(let i=0;i<myTableArray.length;i++)
+    {
+        xValues.push(myTableArray[i][6]);
+    }
+    var yValues = [];
+    for(let i=0;i<myTableArray.length;i++)
+    {
+        yValues.push(parseInt(myTableArray[i][2])-273);
+    }
+    new Chart("myChart", {
+        type: "line",
+        data: {
+            labels: xValues,
+            datasets: [{
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgba(0,0,255,1.0)",
+                borderColor: "rgba(255,0,0,0.2)",
+                fontcolor:"rgba(0,0,0,1.0)",
+                data: yValues
+            }]
+        },
+        options: {
+            legend: {display: false},
+            scales: {
+                yAxes: [{ticks: {min: 0, max:45}}],
+            }
+        }
+    });
+</script>
+</html>
